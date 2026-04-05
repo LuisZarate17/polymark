@@ -1,5 +1,6 @@
-import react from '@vitejs/plugin-react'
-
 export default {
-  presets: [react()],
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
 }

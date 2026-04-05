@@ -1,16 +1,16 @@
 # Polymarket Auto-Trading Dashboard
 
-A Node.js + React application that monitors Polymarket live market data, executes volatility-driven trades with automatic loss prevention, and provides comprehensive performance analytics with hit rate tracking.
+A Node.js + React application that monitors Polymarket market data, executes volatility-driven trades with automatic loss prevention, and provides performance analytics, market discovery, and a paper-trading Test Lab.
 
 ## Features
 
-- **Live Market Data Pipeline**: Real-time order book and price feeds via WebSocket
-- **Volatility-Based Trading**: Automatic buy/sell based on bid-ask spreads
-- **Risk Management**: Automatic stop-loss triggers and position sizing (% of balance)
-- **Real-Time Dashboard**: Live positions, P&L, trade history, and alerts
-- **Backtesting Suite**: Test strategies against historical data
-- **Performance Analyzer**: Track hit rate, win/loss ratios, drawdown analysis
-- **Comprehensive Testing**: Unit, integration, and backtest suites
+- **Live Market Snapshot**: WebSocket-driven orderbook summary (best bid/ask, spread)
+- **Market Discovery**: Top Polymarket probabilities (by volume) in Analyzer
+- **Volatility-Based Trading**: Automatic buy/sell logic based on bid-ask spreads
+- **Risk Management**: Stop-loss, take-profit, position sizing (% of balance)
+- **Dashboard**: P&L cards, portfolio chart, positions table, settings panel, activity feed
+- **Analyzer**: Filters, KPI cards, charts, top trades, full trade history table
+- **Test Lab (Paper Trading)**: Mock funds, test metrics, positions, and event feed
 
 ## Project Structure
 
@@ -41,6 +41,7 @@ polymark/
 │   └── backtest/
 ├── docker-compose.yml    # Multi-container setup (backend, frontend, DB, cache)
 ├── .env.example          # Configuration template
+├── docs/                 # Reflection + proof of participation
 └── README.md
 ```
 
@@ -95,6 +96,9 @@ All settings are in `.env.local`. Key parameters:
 POLYMARKET_API_KEY=your_key
 POLYMARKET_PRIVATE_KEY=your_wallet_private_key
 POLYMARKET_CHAIN_ID=137
+POLYMARKET_TOKEN_ID=your_market_token_id_here   # optional, for live WS feed
+POLYMARKET_CLOB_URL=https://clob.polymarket.com
+POLYMARKET_POLL_MS=2000
 
 # Trading Rules
 POSITION_SIZE_PERCENT=2          # Risk 2% of balance per trade
@@ -125,23 +129,24 @@ npm run test:coverage
 
 ## Performance Analyzer
 
-Access the analyzer dashboard at `http://localhost:3000/analyzer` to view:
-- **Hit Rate**: % of winning trades
-- **Trade History**: All executed trades with entry/exit prices
-- **Risk Metrics**: Drawdown, Sharpe ratio, win/loss ratio
-- **Performance Chart**: Equity curve over time
-- **Strategy Comparison**: A/B test different parameters
+Access the analyzer dashboard at `http://localhost:3000` and select **Analyzer** to view:
+- **Win rate & trade KPIs**
+- **Daily P&L, win/loss, and volume charts**
+- **Performance by category**
+- **Top performing trades**
+- **Full trade history table**
+- **Top Polymarket probabilities** (by volume)
 
 ## API Endpoints
 
 ### Core Endpoints
 - `GET /health` — Server health check
 - `GET /api/status` — API status
-- `GET /api/markets` — List available Polymarket markets
-- `POST /api/positions` — Create new position
-- `GET /api/positions` — View active positions
+- `GET /api/markets/top` — Top markets by volume (Polymarket)
+- `POST /api/positions/open` — Create new position
+- `GET /api/positions` — View positions and balance
 - `POST /api/positions/:id/close` — Close position
-- `GET /api/trades` — Trade history with analytics
+- `GET /api/analyzer/metrics` — Metrics summary
 
 ### Analyzer Endpoints
 - `GET /api/analyzer/metrics` — Overall performance metrics (hit rate, win ratio)
@@ -149,13 +154,10 @@ Access the analyzer dashboard at `http://localhost:3000/analyzer` to view:
 - `GET /api/analyzer/equity` — Equity curve data for charting
 - `GET /api/analyzer/backtest/:id` — Backtest results
 
-## WebSocket Events
+## WebSocket
 
-Real-time updates via WebSocket (`ws://localhost:3001/ws`):
-- `market:update` — Price/orderbook changes
-- `position:opened` — New position created
-- `position:closed` — Position closed with P&L
-- `alert:triggered` — Trading signal or alert
+Real-time market snapshot via WebSocket:
+- `ws://localhost:3001/ws/markets?tokenId=...`
 
 ## Development Workflow
 
@@ -204,7 +206,7 @@ Outputs detailed report with hit rate, max drawdown, Sharpe ratio, and trade-by-
 
 **WebSocket connection fails:**
 - Ensure backend is running
-- Check CORS settings in `backend/src/index.ts`
+- Pick a market token ID or use the Analyzer selector
 - Verify frontend proxy in `frontend/vite.config.ts`
 
 **Tests fail:**
@@ -247,3 +249,14 @@ MIT
 - 📖 [Polymarket Docs](https://docs.polymarket.com)
 - 💬 [Discord Community](https://discord.gg/polymarket)
 - 🐛 [Issue Tracker](https://github.com/yourusername/polymark/issues)
+
+---
+
+## Today’s Accomplishments (Summary)
+
+- Rebuilt the Dashboard and Analyzer layouts to match the current UI spec (cards, charts, tables, sidebar)
+- Added a Markets page placeholder and a new Test Lab page with paper-trading metrics and tables
+- Implemented market discovery (`/api/markets/top`) for top Polymarket probabilities
+- Added a WebSocket market snapshot feed and a selector-based market picker in Analyzer
+- Fixed Tailwind/PostCSS configuration and prevented emitted JS artifacts from breaking Vite
+- Created docs folder with reflection template and proof placeholder
